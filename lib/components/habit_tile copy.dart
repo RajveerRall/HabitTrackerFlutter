@@ -8,6 +8,7 @@ class HabitTile extends StatelessWidget {
   final Function(BuildContext)? settingsTapped;
   final Function(BuildContext)? deleteTapped;
   final Function(BuildContext)? captureTapped;
+  final Icon playIcon;
 
   const HabitTile(
       {super.key,
@@ -16,7 +17,8 @@ class HabitTile extends StatelessWidget {
       required this.onChanged,
       required this.settingsTapped,
       required this.deleteTapped,
-      required this.captureTapped});
+      required this.captureTapped,
+      required this.playIcon});
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +51,8 @@ class HabitTile extends StatelessWidget {
                 Row(
                   children: [
                     IconButton(
-                      onPressed: () => deleteTapped?.call(context),
-                      icon: const Icon(Icons.play_arrow_outlined),
+                      onPressed: () => captureTapped?.call(context),
+                      icon: playIcon,
                     ),
                     IconButton(
                       onPressed: () => deleteTapped?.call(context),

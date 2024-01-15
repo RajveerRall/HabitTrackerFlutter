@@ -30,12 +30,16 @@ class _HomePageState extends State<HomePage> {
   void toggleScreenshots() {
     if (!_isTakingScreenshots) {
       startTakingScreenshots(
-          Duration(seconds: 5)); // Adjust the duration as needed
+          Duration(seconds: 10)); // Adjust the duration as needed
       _isTakingScreenshots = true;
     } else {
       stopTakingScreenshots();
       _isTakingScreenshots = false;
     }
+
+    setState(() {
+      _isTakingScreenshots = _isTakingScreenshots;
+    });
   }
 
   @override
@@ -266,7 +270,9 @@ class _HomePageState extends State<HomePage> {
                   onChanged: (value) => checkBoxTapped(value, index),
                   settingsTapped: (context) => openHabitSettings(index),
                   deleteTapped: (context) => deleteHabit(index),
-                  captureTapped: (context) => deleteHabit(index),
+                  captureTapped: (context) => toggleScreenshots(),
+                  playIcon: Icon(
+                      _isTakingScreenshots ? Icons.stop : Icons.play_arrow),
                 );
               },
             ),
