@@ -34,6 +34,17 @@ class HabitDatabase {
     }
   }
 
+  void loadDateData(String date) {
+    // Load habits for the specified date
+    var habits = _myBox.get(date);
+    if (habits != null) {
+      todaysHabitList = habits;
+    } else {
+      // If there are no habits for the selected date, you can decide to show an empty list or some default value
+      todaysHabitList = []; // or some default value
+    }
+  }
+
   // update database
   void updateDatabase() {
     // update todays entry
@@ -99,7 +110,7 @@ class HabitDatabase {
       };
 
       heatMapDataSet.addEntries(percentForEachDay.entries);
-      print(heatMapDataSet);
+      print(percentForEachDay.entries);
     }
   }
 }

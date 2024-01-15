@@ -40,6 +40,11 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   flutter_heatmap_calendar: ^1.0.5
+  dropdown_search: ^5.0.6
+  screenshot: ^1.2.3
+  screen_capturer: ^0.1.7
+  flutter_ffmpeg: ^0.4.2
+  path_provider: ^2.1.1
 
 
 dev_dependencies:
