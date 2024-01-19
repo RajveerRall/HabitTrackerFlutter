@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habittrackertute/pages/home_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:ffmpeg_helper/ffmpeg_helper.dart';
 
 void main() async {
   // initialize hive
@@ -8,6 +9,10 @@ void main() async {
 
   // open a box
   await Hive.openBox("Habit_Database");
+  
+  // initialize ffmpeg helper
+  WidgetsFlutterBinding.ensureInitialized();
+ await FFMpegHelper.instance.initialize();
 
   runApp(const MyApp());
 }

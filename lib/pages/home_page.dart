@@ -1,18 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
-// import 'package:habittrackertute/components/habit_tile.dart';
 import 'package:habittrackertute/components/month_summary.dart';
-import 'package:habittrackertute/components/my_fab.dart';
 import 'package:habittrackertute/components/my_alert_box.dart';
 import 'package:habittrackertute/data/habit_database.dart';
 import 'package:habittrackertute/datetime/date_time.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:habittrackertute/components/habit_tile copy.dart';
-import 'package:dropdown_search/dropdown_search.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:screen_capturer/screen_capturer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,25 +16,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // int count = 0;
   HabitDatabase db = HabitDatabase();
   final _myBox = Hive.box("Habit_Database");
-  Timer? _timer;
-  bool _isTakingScreenshots = false;
+  // Timer? _timer;
+  // bool _isTakingScreenshots = false;
 
-  void toggleScreenshots() {
-    if (!_isTakingScreenshots) {
-      startTakingScreenshots(
-          Duration(seconds: 10)); // Adjust the duration as needed
-      _isTakingScreenshots = true;
-    } else {
-      stopTakingScreenshots();
-      _isTakingScreenshots = false;
-    }
+  // void toggleScreenshots() {
+  //   if (!_isTakingScreenshots) {
+  //     startTakingScreenshots(
+  //         Duration(seconds: 10)); // Adjust the duration as needed
+  //     _isTakingScreenshots = true;
+  //   } else {
+  //     stopTakingScreenshots();
+  //     _isTakingScreenshots = false;
+  //   }
 
-    setState(() {
-      _isTakingScreenshots = _isTakingScreenshots;
-    });
-  }
+  //   setState(() {
+  //     _isTakingScreenshots = _isTakingScreenshots;
+  //   });
+  // }
 
   @override
   void initState() {
@@ -59,44 +54,6 @@ class _HomePageState extends State<HomePage> {
     db.updateDatabase();
 
     super.initState();
-  }
-
-  void startTakingScreenshots(Duration interval) {
-    int count = 0;
-    _timer?.cancel(); // Cancel any previous timer
-    _timer = Timer.periodic(interval, (Timer t) {
-      takeScreenshot(count);
-      count++;
-    });
-  }
-
-  Future<void> takeScreenshot(int count) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final imagePath = '${directory.path}/screenshot.png';
-    await ScreenCapturer.instance.capture(
-      mode: CaptureMode.screen,
-      imagePath: imagePath,
-      silent: true,
-    );
-    print('Screenshot saved to $imagePath');
-  }
-
-  Future<void> stopTakingScreenshots() async {
-    _timer?.cancel(); // Stop taking screenshots
-    final directory = await getApplicationDocumentsDirectory();
-    final FlutterFFmpeg _encoder = FlutterFFmpeg();
-
-    // Use FlutterFFmpeg to convert the screenshots into an MP4 video
-    await _encoder.execute(
-        '-framerate 1 -i ${directory.path}/screenshot%d.png -c:v libx264 -r 30 -pix_fmt yuv420p ${directory.path}/out.mp4');
-
-    print('Video saved to ${directory.path}/out.mp4');
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel(); // Cancel the timer when the widget is disposed
-    super.dispose();
   }
 
   // checkbox was tapped
@@ -183,12 +140,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.grey[500],
         title: const Text('Habit Tracker'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(_isTakingScreenshots ? Icons.stop : Icons.play_arrow),
-            onPressed: toggleScreenshots,
-          ),
-        ],
+        actions: [],
       ),
       backgroundColor: Colors.grey[300],
       body: Column(
@@ -270,9 +222,6 @@ class _HomePageState extends State<HomePage> {
                   onChanged: (value) => checkBoxTapped(value, index),
                   settingsTapped: (context) => openHabitSettings(index),
                   deleteTapped: (context) => deleteHabit(index),
-                  captureTapped: (context) => toggleScreenshots(),
-                  playIcon: Icon(
-                      _isTakingScreenshots ? Icons.stop : Icons.play_arrow),
                 );
               },
             ),
