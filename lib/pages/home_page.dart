@@ -82,6 +82,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         hoursWithHabits.add(currentHour);
         db.todaysHabitList.add([value, false]);
+        // Rebuild the TimeTableScreen with the updated hoursWithHabits
+        timeTableScreen = TimeTableScreen(hoursWithHabits: hoursWithHabits);
       });
 
       // clear textfield
@@ -176,7 +178,10 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: 300,
                     width: 150,
-                    child: timeTableScreen!,
+                    child: KeyedSubtree(
+                      key: ValueKey(hoursWithHabits.hashCode),
+                      child: timeTableScreen!,
+                    ),
                   )
                 ],
               ),
