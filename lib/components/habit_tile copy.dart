@@ -15,13 +15,13 @@ class HabitTile extends StatefulWidget {
   final Function(BuildContext)? deleteTapped;
 
   const HabitTile({
-    super.key,
+    Key? key,
     required this.habitName,
     required this.habitCompleted,
     required this.onChanged,
     required this.settingsTapped,
     required this.deleteTapped,
-  });
+  }) : super(key: key);
 
   @override
   _HabitTileState createState() => _HabitTileState();
@@ -88,56 +88,59 @@ class _HabitTileState extends State<HabitTile> {
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          Container(
-            width: 580,
-            height: 80,
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Checkbox(
-                      value: widget.habitCompleted,
-                      onChanged: widget.onChanged,
-                    ),
-                    Text(widget.habitName),
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: toggleScreenshots,
-                      icon: Icon(
-                          _isTakingScreenshots ? Icons.stop : Icons.play_arrow),
-                    ),
-                    IconButton(
-                      onPressed: () => widget.deleteTapped?.call(context),
-                      icon: const Icon(Icons.delete_outline),
-                    ),
-                    DropdownButton<int>(
-                      value: selectedValue,
-                      items: const [
-                        DropdownMenuItem(child: Text('1 Minutes'), value: 1),
-                        DropdownMenuItem(child: Text('3 Minutes'), value: 3),
-                        DropdownMenuItem(child: Text('5 Minutes'), value: 5),
-                        DropdownMenuItem(child: Text('7 Minutes'), value: 7),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          selectedValue = value!;
-                          var duration = Duration(minutes: value);
-                          startTakingScreenshots(duration, widget.habitName);
-                        });
-                      },
-                    ),
-                  ],
-                )
-              ],
+          Expanded(
+            child: Container(
+              width: 580,
+              height: 80,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: widget.habitCompleted,
+                        onChanged: widget.onChanged,
+                      ),
+                      Text(widget.habitName),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: toggleScreenshots,
+                        icon: Icon(_isTakingScreenshots
+                            ? Icons.stop
+                            : Icons.play_arrow),
+                      ),
+                      IconButton(
+                        onPressed: () => widget.deleteTapped?.call(context),
+                        icon: const Icon(Icons.delete_outline),
+                      ),
+                      DropdownButton<int>(
+                        value: selectedValue,
+                        items: const [
+                          DropdownMenuItem(child: Text('1 Minutes'), value: 1),
+                          DropdownMenuItem(child: Text('3 Minutes'), value: 3),
+                          DropdownMenuItem(child: Text('5 Minutes'), value: 5),
+                          DropdownMenuItem(child: Text('7 Minutes'), value: 7),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            selectedValue = value!;
+                            var duration = Duration(minutes: value);
+                            startTakingScreenshots(duration, widget.habitName);
+                          });
+                        },
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ],

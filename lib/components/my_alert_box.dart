@@ -7,12 +7,12 @@ class MyAlertBox extends StatelessWidget {
   final VoidCallback onCancel;
 
   const MyAlertBox({
-    super.key,
+    Key? key,
     required this.controller,
     required this.hintText,
     required this.onSave,
     required this.onCancel,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

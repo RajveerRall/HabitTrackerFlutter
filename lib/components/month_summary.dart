@@ -8,10 +8,11 @@ class MonthlySummary extends StatefulWidget {
   final Function? selectedDate;
 
   const MonthlySummary(
-      {super.key,
+      {Key? key,
       required this.datasets,
       required this.startDate,
-      required this.selectedDate});
+      required this.selectedDate})
+      : super(key: key);
 
   @override
   State<MonthlySummary> createState() => _MonthlySummaryState();
@@ -22,21 +23,21 @@ class _MonthlySummaryState extends State<MonthlySummary> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // decoration: _selectedDate != null
-      //     ? BoxDecoration(
-      //         boxShadow: [
-      //           BoxShadow(
-      //             color: Colors.black.withOpacity(0.5),
-      //             spreadRadius: 1,
-      //             blurRadius: 5,
-      //             offset: Offset(0, 3), // changes position of shadow
-      //           ),
-      //         ],
-      //       )
-      //     : null,
       child: SizedBox(
-        width: 200,
-        height: 200,
+        width: 250,
+        height: 250,
+        // decoration: _selectedDate != null
+        //     ? BoxDecoration(
+        //         boxShadow: [
+        //           BoxShadow(
+        //             color: Colors.black.withOpacity(0.5),
+        //             spreadRadius: 1,
+        //             blurRadius: 5,
+        //             offset: Offset(0, 3), // changes position of shadow
+        //           ),
+        //         ],
+        //       )
+        //     : null,
         child: HeatMapCalendar(
             // startDate: createDateTimeObject(startDate),
             // endDate: DateTime.now().add(Duration(days: 0)),

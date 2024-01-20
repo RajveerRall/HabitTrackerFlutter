@@ -1,15 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:habittrackertute/components/month_summary.dart';
 import 'package:habittrackertute/components/my_alert_box.dart';
+import 'package:habittrackertute/components/time_table_screen.dart';
 import 'package:habittrackertute/data/habit_database.dart';
 import 'package:habittrackertute/datetime/date_time.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:habittrackertute/components/habit_tile copy.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,6 +21,8 @@ class _HomePageState extends State<HomePage> {
   // int count = 0;
   HabitDatabase db = HabitDatabase();
   final _myBox = Hive.box("Habit_Database");
+  TimeTableScreen? timeTableScreen;
+  Set<int> hoursWithHabits = {};
   // Timer? _timer;
   // bool _isTakingScreenshots = false;
 
@@ -54,6 +58,7 @@ class _HomePageState extends State<HomePage> {
     db.updateDatabase();
 
     super.initState();
+    timeTableScreen = TimeTableScreen(hoursWithHabits: hoursWithHabits);
   }
 
   // checkbox was tapped
@@ -70,8 +75,12 @@ class _HomePageState extends State<HomePage> {
   // save new habit
   void saveNewHabit(String value) {
     if (value.isNotEmpty) {
+      // Determine the current hour when the habit is added
+      int currentHour = DateTime.now().hour;
       // add new habit to todays habit list
+      // Add the current hour to the set of hours with habits
       setState(() {
+        hoursWithHabits.add(currentHour);
         db.todaysHabitList.add([value, false]);
       });
 
@@ -136,97 +145,97 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(Icons.home_filled),
         backgroundColor: Colors.grey[500],
-        title: const Text('Habit Tracker'),
+        title: const Text('Timescape', style: TextStyle(fontSize: 20)),
         centerTitle: true,
         actions: [],
       ),
-      backgroundColor: Colors.grey[300],
-      body: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Container(
-                    height: 60,
-                    width: 250,
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Set the color of the container
-                      borderRadius: BorderRadius.circular(
-                          10), // Set the border radius of the container
-                    ),
+      backgroundColor: Colors.transparent,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    height: 350,
+                    width: 350,
                     child: Padding(
-                      padding: const EdgeInsets.all(9.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white, // Set the color of the TextField
-                          borderRadius: BorderRadius.circular(
-                              15.0), // Set the border radius of the TextField
+                      padding: const EdgeInsets.all(20.0),
+                      child: MonthlySummary(
+                        datasets: db.heatMapDataSet,
+                        startDate: _myBox.get("START_DATE"),
+                        selectedDate: (DateTime date) {
+                          print('Date selected: $date');
+                          taskbydate(date);
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 300,
+                    width: 150,
+                    child: timeTableScreen!,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Container(
+                height: 60,
+                width: 250,
+                decoration: BoxDecoration(
+                  color: Colors.white, // Set the color of the container
+                  borderRadius: BorderRadius.circular(
+                      10), // Set the border radius of the container
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(9.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white, // Set the color of the TextField
+                      borderRadius: BorderRadius.circular(
+                          15.0), // Set the border radius of the TextField
+                    ),
+                    child: TextField(
+                      onSubmitted: saveNewHabit,
+                      controller: _newHabitNameController,
+                      cursorColor: Colors.grey[800],
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors
+                                  .transparent), // Make the border transparent
+                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
                         ),
-                        child: TextField(
-                          onSubmitted: saveNewHabit,
-                          controller: _newHabitNameController,
-                          cursorColor: Colors.grey[800],
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.all(10),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors
-                                      .transparent), // Make the border transparent
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15.0)),
-                            ),
-                            hintText:
-                                'Enter your task here', // Add your hint text here
-                          ),
-                        ),
+                        hintText:
+                            'Enter your task here', // Add your hint text here
                       ),
                     ),
                   ),
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: SizedBox(
-                  height: 350,
-                  width: 350,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: MonthlySummary(
-                      datasets: db.heatMapDataSet,
-                      startDate: _myBox.get("START_DATE"),
-                      selectedDate: (DateTime date) {
-                        print('Date selected: $date');
-                        taskbydate(date);
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Expanded(
-            flex: 1,
-            child: ListView.builder(
+            ),
+            ListView.builder(
               shrinkWrap: true,
               physics: const ScrollPhysics(),
               itemCount: db.todaysHabitList.length,
               itemBuilder: (context, index) {
+                int reversedIndex = db.todaysHabitList.length - 1 - index;
                 return HabitTile(
-                  habitName: db.todaysHabitList[index][0],
-                  habitCompleted: db.todaysHabitList[index][1],
-                  onChanged: (value) => checkBoxTapped(value, index),
-                  settingsTapped: (context) => openHabitSettings(index),
-                  deleteTapped: (context) => deleteHabit(index),
+                  habitName: db.todaysHabitList[reversedIndex][0],
+                  habitCompleted: db.todaysHabitList[reversedIndex][1],
+                  onChanged: (value) => checkBoxTapped(value, reversedIndex),
+                  settingsTapped: (context) => openHabitSettings(reversedIndex),
+                  deleteTapped: (context) => deleteHabit(reversedIndex),
                 );
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

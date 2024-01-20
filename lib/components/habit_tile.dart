@@ -9,13 +9,13 @@ class HabitTile extends StatelessWidget {
   final Function(BuildContext)? deleteTapped;
 
   const HabitTile({
-    super.key,
+    Key? key,
     required this.habitName,
     required this.habitCompleted,
     required this.onChanged,
     required this.settingsTapped,
     required this.deleteTapped,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
