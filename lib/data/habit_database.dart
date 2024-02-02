@@ -45,6 +45,12 @@ class HabitDatabase {
     }
   }
 
+  void saveTagForHabit(String habitName, String? selectedTag) {
+    Map<String, String?> habitTags = _myBox.get('habitTags') ?? {};
+    habitTags[habitName] = selectedTag;
+    _myBox.put('habitTags', habitTags);
+  }
+
   // update database
   void updateDatabase() {
     // update todays entry

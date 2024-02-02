@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screen_capturer/screen_capturer.dart';
@@ -13,6 +13,8 @@ class HabitTile extends StatefulWidget {
   final Function(bool?)? onChanged;
   final Function(BuildContext)? settingsTapped;
   final Function(BuildContext)? deleteTapped;
+  final VoidCallback? onPlayButtonPressed;
+  final Widget expander;
 
   const HabitTile({
     Key? key,
@@ -21,6 +23,8 @@ class HabitTile extends StatefulWidget {
     required this.onChanged,
     required this.settingsTapped,
     required this.deleteTapped,
+    required this.onPlayButtonPressed,
+    required this.expander,
   }) : super(key: key);
 
   @override
@@ -41,6 +45,9 @@ class _HabitTileState extends State<HabitTile> {
       stopTakingScreenshots();
       _isTakingScreenshots = false;
     }
+
+    // Call the callback provided by the parent widget
+    widget.onPlayButtonPressed?.call();
 
     setState(() {
       _isTakingScreenshots = _isTakingScreenshots;
@@ -84,71 +91,124 @@ class _HabitTileState extends State<HabitTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              width: 580,
-              height: 80,
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: widget.habitCompleted,
-                        onChanged: widget.onChanged,
-                      ),
-                      Text(widget.habitName),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: toggleScreenshots,
-                        icon: Icon(_isTakingScreenshots
-                            ? Icons.stop
-                            : Icons.play_arrow),
-                      ),
-                      IconButton(
-                        onPressed: () => widget.deleteTapped?.call(context),
-                        icon: const Icon(Icons.delete_outline),
-                      ),
-                      DropdownButton<int>(
-                        value: selectedValue,
-                        items: const [
-                          DropdownMenuItem(child: Text('1 Minutes'), value: 1),
-                          DropdownMenuItem(child: Text('3 Minutes'), value: 3),
-                          DropdownMenuItem(child: Text('5 Minutes'), value: 5),
-                          DropdownMenuItem(child: Text('7 Minutes'), value: 7),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            selectedValue = value!;
-                            var duration = Duration(minutes: value);
-                            startTakingScreenshots(duration, widget.habitName);
-                          });
-                        },
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
+    return Container(
+      height: 100,
+      width: 300,
+      margin: EdgeInsets.all(8.0),
+      child: Card(
+        child: ListTile(
+          leading: Icon(
+            widget.habitCompleted
+                ? FluentIcons.checkbox
+                : FluentIcons.checkbox_fill,
+            color: widget.habitCompleted ? Colors.green : Colors.red,
           ),
-        ],
+          title: Text(widget.habitName),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(FluentIcons.edit),
+                onPressed: () => widget.settingsTapped?.call(context),
+                // tooltip: 'Edit Habit',
+              ),
+              IconButton(
+                icon: Icon(FluentIcons.delete),
+                onPressed: () => widget.deleteTapped?.call(context),
+                // tooltip: 'Delete Habit',
+              ),
+              IconButton(
+                onPressed: toggleScreenshots,
+                icon: Icon(
+                    _isTakingScreenshots ? FluentIcons.stop : FluentIcons.play),
+                // tooltip: _isTakingScreenshots
+                //     ? 'Stop Taking Screenshots'
+                //     : 'Start Taking Screenshots',
+              ),
+              // Green by default
+
+              ComboBox<String>(
+                value: 'Green',
+                items: ['Red', 'Blue', 'Green', 'Yellow'].map((color) {
+                  return ComboBoxItem(
+                    child: Text(color),
+                    value: color,
+                  );
+                }).toList(),
+                // onChanged: disabled
+                //     ? null
+                //     : (color) => setState(() => selectedColor = color),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
+// Padding(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Row(
+//         children: [
+//           Expanded(
+//             child: Container(
+//               width: 580,
+//               height: 80,
+//               padding: EdgeInsets.all(16),
+//               decoration: BoxDecoration(
+//                 color: Colors.grey[100],
+//                 borderRadius: BorderRadius.circular(12),
+//               ),
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   Row(
+//                     children: [
+//                       Checkbox(
+//                         value: widget.habitCompleted,
+//                         onChanged: widget.onChanged,
+//                       ),
+//                       Text(widget.habitName),
+//                     ],
+//                   ),
+//                   Row(
+//                     children: [
+//                       IconButton(
+//                         onPressed: toggleScreenshots,
+//                         icon: Icon(_isTakingScreenshots
+//                             ? Icons.stop
+//                             : Icons.play_arrow),
+//                       ),
+//                       IconButton(
+//                         onPressed: () => widget.deleteTapped?.call(context),
+//                         icon: const Icon(Icons.delete_outline),
+//                       ),
+//                       DropdownButton<int>(
+//                         value: selectedValue,
+//                         items: const [
+//                           DropdownMenuItem(child: Text('1 Minutes'), value: 1),
+//                           DropdownMenuItem(child: Text('3 Minutes'), value: 3),
+//                           DropdownMenuItem(child: Text('5 Minutes'), value: 5),
+//                           DropdownMenuItem(child: Text('7 Minutes'), value: 7),
+//                         ],
+//                         onChanged: (value) {
+//                           setState(() {
+//                             selectedValue = value!;
+//                             var duration = Duration(minutes: value);
+//                             startTakingScreenshots(duration, widget.habitName);
+//                           });
+//                         },
+//                       ),
+//                     ],
+//                   )
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
 
 
 
